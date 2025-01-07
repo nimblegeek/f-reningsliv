@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@db";
-import { clubs } from "@db/schema";
+import { clubs, reviews } from "@db/schema";
 import { setupAuth } from "./auth";
 
 // Middleware to check if user is authenticated
@@ -39,7 +39,7 @@ export function registerRoutes(app: Express): Server {
         .from(clubs)
         .where(eq(clubs.validated, true))
         .groupBy(clubs.municipality);
-      
+
       const municipalities = results.map(r => r.municipality);
       res.json(municipalities);
     } catch (error) {
@@ -89,11 +89,11 @@ export function registerRoutes(app: Express): Server {
           eq(clubs.validated, false)
         ))
         .returning();
-      
+
       if (!updatedClub) {
         return res.status(404).send("Club not found or already validated");
       }
-      
+
       res.json(updatedClub);
     } catch (error) {
       res.status(500).send("Failed to validate club");
@@ -111,14 +111,46 @@ export function registerRoutes(app: Express): Server {
           eq(clubs.validated, false)
         ))
         .returning();
-      
+
       if (!deletedClub) {
         return res.status(404).send("Club not found or already validated");
       }
-      
+
       res.json({ message: "Club deleted successfully" });
     } catch (error) {
       res.status(500).send("Failed to delete club");
+    }
+  });
+
+  // Get reviews for a specific club
+  app.get("/api/clubs/:id/reviews", async (req, res) => {
+    const { id } = req.params;
+    try {
+      const clubReviews = await db
+        .select()
+        .from(reviews)
+        .where(eq(reviews.clubId, parseInt(id)))
+        .orderBy(desc(reviews.createdAt));
+      res.json(clubReviews);
+    } catch (error) {
+      res.status(500).send("Failed to fetch reviews");
+    }
+  });
+
+  // Submit a new review for a club
+  app.post("/api/clubs/:id/reviews", async (req, res) => {
+    const { id } = req.params;
+    try {
+      const [newReview] = await db
+        .insert(reviews)
+        .values({
+          ...req.body,
+          clubId: parseInt(id),
+        })
+        .returning();
+      res.json(newReview);
+    } catch (error) {
+      res.status(500).send("Failed to submit review");
     }
   });
 

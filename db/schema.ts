@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, boolean, timestamp, integer, foreignKey } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -21,6 +21,15 @@ export const clubs = pgTable("clubs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
+  clubId: integer("club_id").notNull().references(() => clubs.id, { onDelete: "cascade" }),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+  authorName: text("author_name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
 export type InsertUser = typeof users.$inferInsert;
@@ -39,3 +48,14 @@ export const insertClubSchema = createInsertSchema(clubs, {
 export const selectClubSchema = createSelectSchema(clubs);
 export type InsertClub = typeof clubs.$inferInsert;
 export type Club = typeof clubs.$inferSelect;
+
+export const insertReviewSchema = createInsertSchema(reviews, {
+  clubId: z.number().int().positive(),
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().optional(),
+  authorName: z.string().min(1, "Author name is required"),
+});
+
+export const selectReviewSchema = createSelectSchema(reviews);
+export type InsertReview = typeof reviews.$inferInsert;
+export type Review = typeof reviews.$inferSelect;
