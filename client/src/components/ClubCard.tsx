@@ -42,8 +42,22 @@ export function ClubCard({ club }: { club: Club }) {
           <p className="mt-4 text-foreground">{club.description}</p>
 
           <div className="border-t pt-4 mt-4">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="font-medium">Reviews</h4>
+            <div className="flex items-center justify-between">
+              <div>
+                <Button 
+                  variant="ghost" 
+                  className="p-0 h-auto font-medium hover:bg-transparent"
+                  onClick={() => setIsReviewDialogOpen(prevState => !prevState)}
+                >
+                  Reviews {club.reviewCount > 0 && `(${club.reviewCount})`}
+                  {club.averageRating > 0 && (
+                    <div className="flex items-center ml-2">
+                      <Star className="w-4 h-4 fill-primary text-primary" />
+                      <span className="ml-1">{club.averageRating.toFixed(1)}</span>
+                    </div>
+                  )}
+                </Button>
+              </div>
               <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -62,7 +76,7 @@ export function ClubCard({ club }: { club: Club }) {
                 </DialogContent>
               </Dialog>
             </div>
-            <ReviewList clubId={club.id} />
+            {isReviewDialogOpen && <div className="mt-4"><ReviewList clubId={club.id} /></div>}
           </div>
         </div>
       </CardContent>
