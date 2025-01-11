@@ -13,6 +13,16 @@ import { Button } from "@/components/ui/button";
 export function HomePage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const Header = () => (
+    <header className="border-b bg-background">
+      <nav className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Local Legends</h1>
+        </div>
+      </nav>
+    </header>
+  );
+
   const heroImages = [
     "https://images.unsplash.com/photo-1510364771322-50dbd1441861",
     "https://images.unsplash.com/photo-1509473730112-1cb48705018f",
@@ -21,6 +31,7 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen">
+      <Header />
       <div className="bg-primary/5 py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-12">
