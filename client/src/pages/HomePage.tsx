@@ -35,11 +35,10 @@ export function HomePage() {
       <div className="bg-primary/5 py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">
-              Discover Sports Clubs in Your Municipality
-            </h1>
+            <h1 className="text-4xl font-bold mb-4">Sports Clubs Directory</h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Find and connect with local sports clubs and organizations in your area
+              Find and connect with local sports clubs and organizations in your
+              area
             </p>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
